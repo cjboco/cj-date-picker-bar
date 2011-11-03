@@ -1,0 +1,10 @@
+/* Style for the date navigation bar */
+.cj-datenav { display: block; width: 100%; height: auto; margin-bottom: 15px; overflow: hidden; }
+
+/* nav-months and nav-years are two spans that surround the button groups */
+.cj-datenav .nav-months,
+.cj-datenav .nav-years { float: left; }
+.cj-datenav .nav-months { margin-right: 10px; }
+
+/* buttons use standard jquery ui theme styling, but you can customize using the cj-button class */
+.cj-datenav .cj-button { font-size: 10px; margin: 0 1px; }

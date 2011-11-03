@@ -1,0 +1,188 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html lang="en" class="no-js ie6"><![endif]-->
+<!--[if IE 7 ]><html lang="en" class="no-js ie7"><![endif]-->
+<!--[if IE 8 ]><html lang="en" class="no-js ie8"><![endif]-->
+<!--[if IE 9 ]><html lang="en" class="no-js ie9"><![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--><html lang="en" class="no-js"><!--<![endif]-->
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>CJBoCo - jQuery Date Navigation Bar</title>
+<link rel="shortcut icon" href="assets/images/favicon.png">
+<link href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css"/>
+<link href="assets/css/demo.css" rel="stylesheet" type="text/css" media="all">
+<link href="assets/css/cj-date-picker-bar.css" rel="stylesheet" type="text/css" media="all">
+</head>
+
+<body>
+<div id="wrapper">
+	<header>
+		<div class="padder">
+			<h1>CJ Date Navigation Bar Demo</h1>
+			<p>A jQuery plugin to display a date picker bar to allow quick and easy date selection.</p>
+		</div>
+	</header>
+	<section>
+		<h2><span>Example</span></h2>
+		<p>You can select a date and the table data will change based on your selection (Valid dates are May, June July, August, September and October of 2011). Use the theme switcher to see various styles based on jQuery UI theme builder.</p>
+		<form action="javascript:void(0);">
+			<!-- jQuery UI theme switcher -->
+			<div id="switcher"></div>
+			<!-- The only piece of HTML you need to create to get the nav bar -->
+			<div class="cj-datenav"></div>
+			<!-- Demo table data --->
+			<table class="tableListing">
+				<thead>
+					<tr class="headers">
+						<th class="left nowrap">Title</th>
+						<th class="left nowrap">Author</th>
+						<th class="center nowrap">Publish Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr data-date="10/31/2011">
+						<td class="left">"STAR POWER: Mayweather vs. Ortiz" At The Intersection Of The Boxing Biz And Show Biz</td>
+						<td class="left nowrap">John Doe</td>
+						<td class="center nowrap">10/31/2011 12:00 AM</td>
+					</tr>
+					<tr data-date="09/27/2011">
+						<td class="left">Mayweather-Ortiz "24/7" On HBO &amp; CNN Tonight!</td>
+						<td class="left nowrap">John Doe</td>
+						<td class="center nowrap">09/27/2011 12:00 AM</td>
+					</tr>
+					<tr data-date="08/26/2011">
+						<td class="left">Chavez Jr. vs. Hearns Fight Off!</td>
+						<td class="left nowrap">John Doe</td>
+						<td class="center nowrap">08/26/2011 12:00 AM</td>
+					</tr>
+					<tr data-date="08/25/2011">
+						<td class="left">Eddie Chambers- Tony Thompson set for Oct. 28th !</td>
+						<td class="left nowrap">John Doe</td>
+						<td class="center nowrap">08/25/2011 12:10 AM</td>
+					</tr>
+					<tr data-date="08/25/2011">
+						<td class="left">Don King tops Yahoo search on Saturday !!!</td>
+						<td class="left nowrap">John Doe</td>
+						<td class="center nowrap">08/25/2011 12:00 AM</td>
+					</tr>
+					<tr data-date="07/24/2011">
+						<td class="left">Star Power: Canelo Alvarez and Alfonso Gomez Media Conference Call</td>
+						<td class="left nowrap">John Doe</td>
+						<td class="center nowrap">07/24/2011 12:10 AM</td>
+					</tr>
+					<tr data-date="07/16/2011">
+						<td class="left">IBF Orders Agbeko-Mares Rematch!</td>
+						<td class="left nowrap">John Adams</td>
+						<td class="center nowrap">07/16/2011 12:05 AM</td>
+					</tr>
+					<tr data-date="07/15/2011">
+						<td class="left">MMA Recap: Chris Lytle Ends Career In Winners Circle</td>
+						<td class="left nowrap">Fred Wilson</td>
+						<td class="center nowrap">07/15/2011 12:00 AM</td>
+					</tr>
+					<tr data-date="06/13/2011">
+						<td class="left">Hitting Below The Belt: Mares Edges Agbeko</td>
+						<td class="left nowrap">John Adams</td>
+						<td class="center nowrap">06/13/2011 12:00 AM</td>
+					</tr>
+					<tr data-date="05/2011/2011">
+						<td class="left">Mayweather vs Ortiz: Is A Family Affair</td>
+						<td class="left nowrap">John Doe</td>
+						<td class="center nowrap">05/2011/2011 12:00 AM</td>
+					</tr>
+					<tr data-date="05/2011/2011">
+						<td class="left">Mayweather vs Ortiz To Be Shown In Theaters</td>
+						<td class="left nowrap">John Doe</td>
+						<td class="center nowrap">05/2011/2011 12:00 AM</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+		<br />
+		<br />
+		<h3>Use</h3>
+		<p>To use, simple add the following HTML to your document.</p>
+		<code>&lt;div class="cj-datenav"&gt;&lt;/div&gt;</code>
+		<p>Then initialize the nav bar like so...</p>
+		<pre><code>$('.cj-datenav').cjDateNavBar({
+   date: '10/31/2011', // pass a date string to set initial date
+   bigInc: 10,         // the big jump amount, defaults to 10
+   tinyInc: 5,         // the tiny jump amount, defaults to 5
+   showInc: false,     // shows the increments numbers, instead of '<<' '<' or '>' '>>'. defaults false
+   callback: function(dateObj) {
+      // ...do your callback stuff here.
+      // dateObj = a JavaScript date object.
+   },
+   // The following is optional. Provided for non-english localization.
+   // Defaults to english short names (i.e. what's listed here)
+   monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+});</code></pre>
+		<p>You can then set CSS rules to define the look and position.</p>
+		<pre><code>/* Style for the date navigation bar */
+.cj-datenav { display: block; width: 100%; height: auto; margin-bottom: 15px; overflow: hidden; }
+
+/* nav-months and nav-years are two spans that surround the button groups */
+.cj-datenav .nav-months,
+.cj-datenav .nav-years { float: left; }
+.cj-datenav .nav-months { margin-right: 10px; }
+
+/* buttons use standard jquery ui theme styling, but you can customize using the cj-button class */
+.cj-datenav .cj-button { font-size: 10px; margin: 0 1px; }</code></pre>
+	</section>
+	<footer>
+		<div class="padder"> &copy;2011 <a href="http://www.cjboco.com/">Creative Juices Bo. Co.</a> All rights reserved.<br />
+			Licensed under the MIT.</br>
+		</div>
+	</footer>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js"></script>
+<script src="//jqueryui.com/themeroller/themeswitchertool/"></script>
+
+<script src="assets/js/jquery.cj-date-picker-bar.js"></script>
+<script>
+(function($) {
+   "use strict";
+
+   // internally used to switch UI themes
+   $('#switcher').themeswitcher();
+
+   // the magical stuff...
+   $('.cj-datenav').cjDateNavBar({
+      date: '10/31/2011',
+      callback: function(dateObj) {
+
+         //
+         // The following is just a quick example of what is possible.
+         // You could use AJAX to pull new data, or highlight certain
+         // table rows, etc. The skies the limit.
+         //
+
+         console.log(dateObj);
+
+         var $tr = $('table.tableListing tbody tr'),
+            cnt = 0;
+         $('table.tableListing #nodates').remove();
+         $tr.each(function() {
+            var trdate = new Date($(this).attr('data-date'));
+            if (trdate && trdate.getMonth() === dateObj.getMonth() && trdate.getFullYear() === dateObj.getFullYear()) {
+               $(this).show();
+               cnt++;
+            } else {
+               $(this).hide();
+            }
+         });
+         if (cnt === 0) {
+            $('table.tableListing tbody').append('<tr id="nodates"><td colspan="3">There are not entries for this date range.</td></tr>');
+         }
+
+      }
+   });
+
+}(jQuery));
+</script>
+
+</body>
+</html>
