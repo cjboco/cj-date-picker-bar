@@ -1,5 +1,4 @@
-html,
-body { overflow: hidden; }
+html { overflow: auto; }
 body { font-size: .95em; padding: 10px 20px; font-family: "Myriad Pro", Helvetica, Arial, sans-serif; }
 h1, h2, h3, h4, h5 { font-family: Hevetica, Arial, sans-serif; font-weight: normal; font-style: normal; letter-spacing: -0.05em; }
 h1 { margin: 0.1em 0 0.6em 0; font-size: 2.4em; color: #353849; }

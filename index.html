@@ -118,7 +118,13 @@
    // Defaults to english short names (i.e. what's listed here)
    monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 });</code></pre>
-		<p>You can then set CSS rules to define the look and position.</p>
+		<h3>CSS</h3>
+		<p>You can then set CSS rules to define the look and position. The following list shows the custom class names that are used. jQuery UI class name styling is also incorporated to allow further control.</p>
+		<p><strong>.cj-datenav</strong> - The main block.<br />
+			<strong>.cj-datenav .nav-months</strong> - The month button set<br />
+			<strong>.cj-datenav .nav-years</strong> - The year button set.<br />
+			<strong>.cj-datenav .cj-button</strong> - The buttons</p>
+		<p>An example CSS script might look something like this.</p>
 		<pre><code>/* Style for the date navigation bar */
 .cj-datenav { display: block; width: 100%; height: auto; margin-bottom: 15px; overflow: hidden; }
 
@@ -129,6 +135,58 @@
 
 /* buttons use standard jquery ui theme styling, but you can customize using the cj-button class */
 .cj-datenav .cj-button { font-size: 10px; margin: 0 1px; }</code></pre>
+		<h3>Options</h3>
+		<p>You can control the behavior by initializing using any of the following option settings.</p>
+		<table>
+			<tr>
+				<th scope="col">Option</th>
+				<th scope="col">Description</th>
+				<th scope="col">Type</th>
+				<th scope="col">Default</th>
+			</tr>
+			<tr>
+				<td>date</td>
+				<td>To set the start date, you can pass a date string. i.e. &quot;1/1/2011&quot;. (will use current date if not passed)</td>
+				<td>string</td>
+				<td>null</td>
+			</tr>
+			<tr>
+				<td>bigInc</td>
+				<td>Determines the big   jump amount for the years.</td>
+				<td>number</td>
+				<td>10</td>
+			</tr>
+			<tr>
+				<td>tinyInc</td>
+				<td>Determines the tiny   jump amount for the years.</td>
+				<td>number</td>
+				<td>5</td>
+			</tr>
+			<tr>
+				<td>monthNames</td>
+				<td>Default short month names to use for displaying the month buttons</td>
+				<td>array</td>
+				<td>[&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;]</td>
+			</tr>
+			<tr>
+				<td>showInc</td>
+				<td>If set to TRUE, then the year increment buttons will show the actual jump value. If FALSE, then uses &lt;&lt;, &lt;, &gt;, &gt;&gt;</td>
+				<td>boolean</td>
+				<td>false</td>
+			</tr>
+			<tr>
+				<td>allowFuture</td>
+				<td>If set to TRUE, then future dates are navigable. FALSE, prevents the selection of future dates. i.e. Dates greater than the current date</td>
+				<td>boolean</td>
+				<td>true</td>
+			</tr>
+			<tr>
+				<td>callback</td>
+				<td>An optional callback function that gets called after a button is clicked.</td>
+				<td>function</td>
+				<td>null</td>
+			</tr>
+		</table>
 	</section>
 	<footer>
 		<div class="padder"> &copy;2011 <a href="http://www.cjboco.com/">Creative Juices Bo. Co.</a> All rights reserved.<br />

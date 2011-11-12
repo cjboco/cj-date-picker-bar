@@ -42,6 +42,7 @@ option         type         default
 date          string        null (will use current date if not passed)
 bigInc        number        10
 tinyInc       number        5
-showInc       boolean       false
-callback      function      null
 monthNames    array         ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+showInc       boolean       false
+showFuture    boolean       true
+callback      function      null
