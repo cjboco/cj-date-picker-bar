@@ -160,13 +160,13 @@
 				// check to see if the user supplied a min or
 				// max date. Double check if they are valid dates
 				// and set properly. If not, set to null.
-				opts.dateMin = new Date(opts.dateMin);
+				opts.dateMin = opts.dateMin ? new Date(opts.dateMin) : null;
 				if (isDate(opts.dateMin)) {
 					opts.dateMin.setDate(1);
 				} else {
 					opts.dateMin = null;
 				}
-				opts.dateMax = new Date(opts.dateMax);
+				opts.dateMax = opts.dateMax ? new Date(opts.dateMax) : null;
 				if (isDate(opts.dateMax)) {
 					opts.dateMax.setDate(1);
 				} else {
