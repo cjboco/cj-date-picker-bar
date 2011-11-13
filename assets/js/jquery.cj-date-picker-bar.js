@@ -6,39 +6,45 @@
  * Written by: Doug Jones (www.cjboco.com)
  * Licensed under the MIT.
  *
- * A jQuery plugin to display a date picker bar to allow quick and easy date selection.
+ * A jQuery plugin to display a horizontal date picker bar to allow quick and easy date selection.
  * Returns a JS date object.
  *
- * 1.1 - Added ability to prevent future dates.
- * 1.0 - initial release
+ *   2.0 - Renamed function to reflect project name.
+ *         Added min and max date settings. (Overides showFuture)
+ *         Updated internal isDate() function.
+ *         File & document cleanup.
+ *   1.1 - Added ability to prevent future dates.
+ *   1.0 - initial release
  */
 //@todo - Maybe add the ability to set return date format (i.e. mm/dd/yyyy, etc)
-//@todo - Maybe add min and max allowed dates
 (function ($) {
 	"use strict";
 
-	$.cjDateNavBar = function ($obj, settings) {
+	$.cjDatePickerBar = function ($obj, settings) {
 
 		var opts = {
-			date: null,
-			bigInc: 10,
-			tinyInc: 5,
-			monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-			showInc: false,
-			showFuture: true,
-			callback: null
-		},
-			isDate = function (d) {
-				return !isNaN(new Date(d).getYear());
+				date: null,
+				dateMin: null,
+				dateMax: null,
+				bigInc: 10,
+				tinyInc: 5,
+				monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+				showInc: false,
+				showFuture: true,
+				callback: null
+			},
+			isDate = function (date) {
+				var d = date ? new Date(date.toString()) : null;
+				return (d !== null) && !isNaN(d) && (typeof d.getDate() !== "undefined");
 			};
 
 		function setDateNav(m, y) {
 
 			var cdate = $obj.data('cdate'),
-				now = new Date(),
 				triggerClb = true;
 
-			$obj.find('button').removeClass('ui-state-disabled').removeAttr('disabled');
+			// start off with everything disabled. (We do date checks below)
+			$obj.find('button').addClass('ui-state-disabled').attr('disabled', 'disabled');
 
 			// check to see if our object exists and date is set
 			if ($obj.length > 0 && cdate) {
@@ -89,29 +95,48 @@
 
 					// update the buttons
 					$obj.find('.nav-months button[data-month="' + m + '"]').addClass('ui-state-focus');
-					$obj.find('.nav-years button[data-inc="prev"]').text(cdate.getFullYear() - 1);
-					$obj.find('.nav-years button[data-inc="current"]').text(cdate.getFullYear());
-					$obj.find('.nav-years button[data-inc="next"]').text(cdate.getFullYear() + 1);
+					$obj.find('.nav-years button[data-inc="prevbig"]').attr('data-year', cdate.getFullYear() - opts.bigInc);
+					$obj.find('.nav-years button[data-inc="prevtiny"]').attr('data-year', cdate.getFullYear() - opts.tinyInc);
+					$obj.find('.nav-years button[data-inc="prev"]').attr('data-year', cdate.getFullYear() - 1).text(cdate.getFullYear() - 1);
+					$obj.find('.nav-years button[data-inc="current"]').attr('data-year', cdate.getFullYear()).text(cdate.getFullYear());
+					$obj.find('.nav-years button[data-inc="next"]').attr('data-year', cdate.getFullYear() + 1).text(cdate.getFullYear() + 1);
+					$obj.find('.nav-years button[data-inc="nexttiny"]').attr('data-year', cdate.getFullYear() + opts.tinyInc);
+					$obj.find('.nav-years button[data-inc="nextbig"]').attr('data-year', cdate.getFullYear() + opts.bigInc);
 
-					// check future dates (if not allowed)
-					if (!opts.showFuture) {
-						if (cdate > now) {
-							// this prevents if the user has a month selected that is greater than the now date.
-							// also, we don't want to trigger the callback on this call, only on the next one.
-							cdate = new Date(now.getMonth() + '/01/' + now.getFullYear());
-							setDateNav(now.getMonth(), now.getFullYear());
-							triggerClb = false;
-						}
-						if (cdate.getFullYear() >= now.getFullYear()) {
-							$obj.find('button[data-month]:gt(' + cdate.getMonth() + ')').addClass('ui-state-disabled').attr('disabled', 'disabled');
-							$obj.find('button[data-inc="next"]').addClass('ui-state-disabled').attr('disabled', 'disabled');
-						}
-						if ((cdate.getFullYear() + opts.tinyInc) >= now.getFullYear()) {
-							$obj.find('button[data-inc="nexttiny"]').addClass('ui-state-disabled').attr('disabled', 'disabled');
-						}
-						if ((cdate.getFullYear() + opts.bigInc) >= now.getFullYear()) {
-							$obj.find('button[data-inc="nextbig"]').addClass('ui-state-disabled').attr('disabled', 'disabled');
-						}
+					// only activate buttons that fall withing our date range (if provided)
+					if (isDate(opts.dateMin) || isDate(opts.dateMax)) {
+
+						// check the current date and make sure it's withing our range
+						cdate = cdate < opts.dateMin ? opts.dateMin : cdate;
+						cdate = cdate > opts.dateMax ? opts.dateMax : cdate;
+
+						// check the month buttons
+						$obj.find('.cj-button-month').each(function() {
+							var $this = $(this),
+								bd = new Date(parseInt($this.attr('data-month'), 10) + '/1/' + cdate.getFullYear());
+							if (isDate(bd) && !isDate(opts.dateMin) && isDate(opts.dateMax) && bd <= opts.dateMax) {
+								$this.removeClass('ui-state-disabled').removeAttr('disabled');
+							} else if (isDate(bd) && isDate(opts.dateMin) && bd >= opts.dateMin && isDate(opts.dateMax) && bd <= opts.dateMax) {
+								$this.removeClass('ui-state-disabled').removeAttr('disabled');
+							}
+						});
+
+						// check the year buttons
+						$obj.find('.cj-button-year').each(function() {
+							var $this = $(this),
+								bd = parseInt($this.attr('data-year'), 10);
+							if (!isDate(opts.dateMin) && isDate(opts.dateMax) && bd <= opts.dateMax.getFullYear()) {
+								$this.removeClass('ui-state-disabled').removeAttr('disabled');
+							} else if (isDate(opts.dateMin) && bd >= opts.dateMin.getFullYear() && isDate(opts.dateMax) && bd <= opts.dateMax.getFullYear()) {
+								$this.removeClass('ui-state-disabled').removeAttr('disabled');
+							}
+						});
+
+					} else {
+
+						// no date check so activate everything
+						$obj.find('.cj-button-month,.cj-button-year').removeClass('ui-state-disabled').removeAttr('disabled');
+
 					}
 
 					// save out current date
@@ -132,12 +157,35 @@
 			// check to see if our object exists
 			if ($obj.length > 0) {
 
+				// check to see if the user supplied a min or
+				// max date. Double check if they are valid dates
+				// and set properly. If not, set to null.
+				opts.dateMin = new Date(opts.dateMin);
+				if (isDate(opts.dateMin)) {
+					opts.dateMin.setDate(1);
+				} else {
+					opts.dateMin = null;
+				}
+				opts.dateMax = new Date(opts.dateMax);
+				if (isDate(opts.dateMax)) {
+					opts.dateMax.setDate(1);
+				} else {
+					opts.dateMax = null;
+				}
+				if (isDate(opts.dateMin) && isDate(opts.dateMax) && opts.dateMax < opts.dateMin) {
+					throw('Invalid min or max date.');
+				}
+
+				// set the max date to the current date, if dateMin and dateMax
+				// are null and opts.showFuture is set to false.
+				if (!opts.dateMin && !opts.dateMax && !opts.showFuture) {
+					 opts.dateMax = new Date();
+					 opts.dateMax.setDate(1);
+				}
+
 				// check to see if the user supplied a date to use.
 				// If not, create one and set to current date.
-				d = opts.date ? new Date(opts.date) : new Date();
-				if (!isDate(d)) {
-					d = new Date();
-				}
+				d = isDate(opts.date) ? new Date(opts.date) : new Date();
 
 				// the DAY is not being used, but we need to make sure that
 				// the date object is valid for all days, so set DAY = 1
@@ -155,18 +203,18 @@
 				// create the month buttons
 				for (i = 1; i <= 12; i++) {
 					d = new Date(i + '/1/' + d.getFullYear());
-					$m.append('<button class="cj-button ui-state-default ui-corner-all" data-month="' + i + '">' + opts.monthNames[d.getMonth()] + '</button>');
+					$m.append('<button class="cj-button cj-button-month ui-state-default ui-corner-all" data-month="' + i + '">' + opts.monthNames[d.getMonth()] + '</button>');
 				}
 
 				// create the year buttons
 				$y.append(
-					'<button class="cj-button ui-state-default ui-corner-all" data-year="' + (d.getFullYear() - opts.bigInc) + '" data-inc="prevbig">' + (opts.showInc ? '-' + opts.bigInc : '&lt;&lt;') + '</button>' +
-					'<button class="cj-button ui-state-default ui-corner-all" data-year="' + (d.getFullYear() - opts.tinyInc) + '" data-inc="prevtiny">' + (opts.showInc ? '-' + opts.tinyInc : '&lt;') + '</button>' +
-					'<button class="cj-button ui-state-default ui-corner-all" data-year="' + (d.getFullYear() - 1) + '" data-inc="prev">' + (d.getFullYear() - 1) + '</button>' +
-					'<button class="cj-button ui-state-default ui-corner-all ui-state-focus" data-year="' + d.getFullYear() + '" data-inc="current">' + d.getFullYear() + '</button>' +
-					'<button class="cj-button ui-state-default ui-corner-all" data-year="' + (d.getFullYear() + 1) + '" data-inc="next">' + (d.getFullYear() + 1) + '</button>' +
-					'<button class="cj-button ui-state-default ui-corner-all" data-year="' + (d.getFullYear() + opts.tinyInc) + '" data-inc="nexttiny">' + (opts.showInc ? '+' + opts.tinyInc : '&gt;') + '</button>' +
-					'<button class="cj-button ui-state-default ui-corner-all" data-year="' + (d.getFullYear() + opts.bigInc) + '" data-inc="nextbig">' + (opts.showInc ? '+' + opts.bigInc : '&gt;&gt;') + '</button>'
+					'<button class="cj-button cj-button-year ui-state-default ui-corner-all" data-year="' + (d.getFullYear() - opts.bigInc) + '" data-inc="prevbig">' + (opts.showInc ? '-' + opts.bigInc : '&lt;&lt;') + '</button>' +
+					'<button class="cj-button cj-button-year ui-state-default ui-corner-all" data-year="' + (d.getFullYear() - opts.tinyInc) + '" data-inc="prevtiny">' + (opts.showInc ? '-' + opts.tinyInc : '&lt;') + '</button>' +
+					'<button class="cj-button cj-button-year ui-state-default ui-corner-all" data-year="' + (d.getFullYear() - 1) + '" data-inc="prev">' + (d.getFullYear() - 1) + '</button>' +
+					'<button class="cj-button cj-button-year ui-state-default ui-corner-all ui-state-focus" data-year="' + d.getFullYear() + '" data-inc="current">' + d.getFullYear() + '</button>' +
+					'<button class="cj-button cj-button-year ui-state-default ui-corner-all" data-year="' + (d.getFullYear() + 1) + '" data-inc="next">' + (d.getFullYear() + 1) + '</button>' +
+					'<button class="cj-button cj-button-year ui-state-default ui-corner-all" data-year="' + (d.getFullYear() + opts.tinyInc) + '" data-inc="nexttiny">' + (opts.showInc ? '+' + opts.tinyInc : '&gt;') + '</button>' +
+					'<button class="cj-button cj-button-year ui-state-default ui-corner-all" data-year="' + (d.getFullYear() + opts.bigInc) + '" data-inc="nextbig">' + (opts.showInc ? '+' + opts.bigInc : '&gt;&gt;') + '</button>'
 				);
 
 				// bind our month and year buttons with a click handler
@@ -194,12 +242,12 @@
 
 	$.fn.extend({
 
-		cjDateNavBar: function (settings) {
+		cjDatePickerBar: function (settings) {
 
 			// call to the plug-in
 			return this.each(function () {
 
-				$.cjDateNavBar($(this), settings);
+				$.cjDatePickerBar($(this), settings);
 
 			});
 
