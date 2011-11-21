@@ -10,7 +10,7 @@ A jQuery plugin to display a horizontal date picker bar to allow quick and easy 
 ## HTML ##
 	<div class="cj-datenav"></div>
 
-JS
+## JS ##
 	<script src="assets/js/jquery.cj-date-picker-bar.js"></script>
 	<script>
 	(function($) {
@@ -36,16 +36,16 @@ The ID and CLASS naming conventions allow for jQuery UI theme styling, but addit
 ## SETTINGS ##
 These are the items which you can pass to the function when initializing.
 
-option         type         default
----------------------------------------------------------------------------
-date          string        null (will use current date if not passed)
-dateMin       string        null
-dateMax       string        null
-bigInc        number        10
-tinyInc       number        5
-monthNames    array         ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-showInc       boolean       false
-showFuture    boolean       true
-callback      function      null
+| option     | type     | default
+| ---------- | -------- | ------------------------------------------------------------------------------------ |
+| date       | string   | null (will use current date if not passed)                                           |
+| dateMin    | string   | null                                                                                 |
+| dateMax    | string   | null                                                                                 |
+| bigInc     | number   | 10                                                                                   |
+| tinyInc    | number   | 5                                                                                    |
+| monthNames | array    | ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] |
+| showInc    | boolean  | false                                                                                |
+| showFuture | boolean  | true                                                                                 |
+| callback   | function | null                                                                                 |
 
 Please review included index.html for further details and help.
