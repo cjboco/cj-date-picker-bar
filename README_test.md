@@ -12,18 +12,20 @@ HTML
 `<div class="cj-datenav"></div>`
 
 JS
-`<script src="assets/js/jquery.cj-date-picker-bar.js"></script>
-<script>
-(function($) {
-   "use strict";
-   $('.cj-datenav').cjDatePickerBar({
-      date: '10/31/2011',
-      callback: function(dateObj) {
-         console.log(dateObj)
-      }
-   });
-}(jQuery));
-</script>`
+`
+	<script src="assets/js/jquery.cj-date-picker-bar.js"></script>
+	<script>
+	(function($) {
+	   "use strict";
+	   $('.cj-datenav').cjDatePickerBar({
+		  date: '10/31/2011',
+		  callback: function(dateObj) {
+			 console.log(dateObj)
+		  }
+	   });
+	}(jQuery));
+	</script>
+`
 
 CSS
 The ID and CLASS naming conventions allow for jQuery UI theme styling, but
