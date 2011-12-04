@@ -2,11 +2,8 @@ CJ Date Picker Bar v1.0
 =======================
 
 Copyright (c) 2011 Creative Juices Bo. Co.
-
 Author: Doug Jones [www.cjboco.com](http://www.cjboco.com/)
-
 Licensed under the MIT.
-
 
 A jQuery plugin to display a horizontal date picker bar to allow quick and easy date selection. Returns a JS date object.
 
