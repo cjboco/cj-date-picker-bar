@@ -2,21 +2,24 @@
 /*
  * CJ Date Navigation Bar
  *
- * Copyright (c) 2011 Creative Juices Bo. Co.
+ * Copyright (c) 2012 Creative Juices Bo. Co.
  * Written by: Doug Jones (www.cjboco.com)
  * Licensed under the MIT.
  *
  * A jQuery plugin to display a horizontal date picker bar to allow quick and easy date selection.
  * Returns a JS date object.
  *
+ *   2.2 - Added days option.
+ *   2.1 - Added redefined onLoad/onClick methods.
  *   2.0 - Renamed function to reflect project name.
  *         Added min and max date settings. (Overides showFuture)
  *         Updated internal isDate() function.
  *         File & document cleanup.
  *   1.1 - Added ability to prevent future dates.
  *   1.0 - initial release
+ *
+ * @Maybe add the ability to set return date format (i.e. mm/dd/yyyy, etc)
  */
-//@todo - Maybe add the ability to set return date format (i.e. mm/dd/yyyy, etc)
 (function ($) {
 	"use strict";
 
@@ -31,17 +34,29 @@
 				monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 				showInc: false,
 				showFuture: true,
-				callback: null
+				showDays: false,
+				callback: null,
+				onLoad: null,
+				onClick: null
 			},
 			isDate = function (date) {
 				var d = date ? new Date(date.toString()) : null;
-				return (d !== null) && !isNaN(d) && (typeof d.getDate() !== "undefined");
+				return (d !== null) && !isNaN(d) && (d.getDate() !== undefined);
+			},
+			daysInMonth = function(year, month) {
+				var s = new Date(year, month, 1),
+					e = new Date(year, month + 1, 1),
+					days = parseInt((e - s) / (1000 * 60 * 60 * 24), 10);
+				return days;
 			};
 
-		function setDateNav(m, y) {
+		Date.prototype.daysInMonth = function() {
+			return daysInMonth(this.getFullYear(), this.getMonth());
+		};
 
-			var cdate = $obj.data('cdate'),
-				triggerClb = true;
+		function setDateNav(d, m, y, clb) {
+
+			var cdate = $obj.data('cdate');
 
 			// start off with everything disabled. (We do date checks below)
 			$obj.find('button').addClass('ui-state-disabled').attr('disabled', 'disabled');
@@ -51,15 +66,18 @@
 
 				// grab current date and check passed arguments.
 				cdate = new Date(cdate);
-				if (!m || typeof m === 'undefined') {
+				if (!d || d === undefined) {
+					d = cdate.getDate();
+				}
+				if (!m || m === undefined) {
 					m = cdate.getMonth() + 1;
 				}
-				if (!y || typeof y === 'undefined') {
+				if (!y || y === undefined) {
 					y = cdate.getFullYear();
 				}
 
-				// remove highlight from month buttons
-				$obj.find('.nav-months button.ui-state-focus').removeClass('ui-state-focus');
+				// remove highlight from day & month buttons
+				$obj.find('.nav-days button.ui-state-focus, .nav-months button.ui-state-focus').removeClass('ui-state-focus');
 
 				// make sure our date is valid
 				if (cdate && isDate(cdate)) {
@@ -93,7 +111,12 @@
 					// update the date month offset
 					cdate.setMonth(parseInt(m, 10) - 1);
 
+					// update the date day
+					cdate.setDate(d);
+
 					// update the buttons
+
+					$obj.find('.nav-days button[data-day="' + d + '"]').addClass('ui-state-focus');
 					$obj.find('.nav-months button[data-month="' + m + '"]').addClass('ui-state-focus');
 					$obj.find('.nav-years button[data-inc="prevbig"]').attr('data-year', cdate.getFullYear() - opts.bigInc);
 					$obj.find('.nav-years button[data-inc="prevtiny"]').attr('data-year', cdate.getFullYear() - opts.tinyInc);
@@ -109,6 +132,17 @@
 						// check the current date and make sure it's withing our range
 						cdate = cdate < opts.dateMin ? opts.dateMin : cdate;
 						cdate = cdate > opts.dateMax ? opts.dateMax : cdate;
+
+						// check the day buttons
+						$obj.find('.cj-button-day').each(function() {
+							var $this = $(this),
+								bd = new Date((cdate.getMonth() + 1) + '/' + $this.attr('data-day') + '/' + cdate.getFullYear());
+							if (isDate(bd) && !isDate(opts.dateMin) && isDate(opts.dateMax) && bd <= opts.dateMax) {
+								$this.removeClass('ui-state-disabled').removeAttr('disabled');
+							} else if (isDate(bd) && isDate(opts.dateMin) && bd >= opts.dateMin && isDate(opts.dateMax) && bd <= opts.dateMax) {
+								$this.removeClass('ui-state-disabled').removeAttr('disabled');
+							}
+						});
 
 						// check the month buttons
 						$obj.find('.cj-button-month').each(function() {
@@ -142,8 +176,10 @@
 					// save out current date
 					$obj.data('cdate', cdate);
 
-					//if the user provided a callback, then call it
-					if (triggerClb && $.isFunction(opts.callback)) {
+					if ($.isFunction(clb)) {
+						clb.call($obj.get(0), cdate);
+					} else if ($.isFunction(opts.callback)) {
+						// this is legacy support and will be remove
 						opts.callback.call($obj.get(0), cdate);
 					}
 				}
@@ -152,7 +188,7 @@
 
 		function initDateNav() {
 
-			var d, i, $m, $y;
+			var d, i, $d, $m, $y;
 
 			// check to see if our object exists
 			if ($obj.length > 0) {
@@ -161,15 +197,11 @@
 				// max date. Double check if they are valid dates
 				// and set properly. If not, set to null.
 				opts.dateMin = opts.dateMin ? new Date(opts.dateMin) : null;
-				if (isDate(opts.dateMin)) {
-					opts.dateMin.setDate(1);
-				} else {
+				if (!isDate(opts.dateMin)) {
 					opts.dateMin = null;
 				}
 				opts.dateMax = opts.dateMax ? new Date(opts.dateMax) : null;
-				if (isDate(opts.dateMax)) {
-					opts.dateMax.setDate(1);
-				} else {
+				if (!isDate(opts.dateMax)) {
 					opts.dateMax = null;
 				}
 				if (isDate(opts.dateMin) && isDate(opts.dateMax) && opts.dateMax < opts.dateMin) {
@@ -180,25 +212,45 @@
 				// are null and opts.showFuture is set to false.
 				if (!opts.dateMin && !opts.dateMax && !opts.showFuture) {
 					 opts.dateMax = new Date();
-					 opts.dateMax.setDate(1);
 				}
 
 				// check to see if the user supplied a date to use.
 				// If not, create one and set to current date.
 				d = isDate(opts.date) ? new Date(opts.date) : new Date();
 
-				// the DAY is not being used, but we need to make sure that
-				// the date object is valid for all days, so set DAY = 1
-				// (i.e. January 31 is valid, but Feb 31 is not)
-				d.setDate(1);
+				// check the current date, if it's less than or greater
+				// than the min/max dates, set appropriately
+				if (opts.dateMin && d < opts.dateMin) {
+					d = opts.dateMin;
+				} else if (opts.dateMax && d > opts.dateMax) {
+					d = opts.dateMax;
+				}
 
 				// save out date object for reference
 				$obj.data('cdate', d);
 
 				// create the navigation bar DOM
-				$obj.html('').hide().append('<span class="nav-months cj-buttonset"></span><span class="nav-years cj-buttonset"></span>');
+				$obj.html('').hide().append('<span class="nav-months cj-buttonset"></span><span class="nav-years cj-buttonset"></span>' + (opts.showDays ? '<span class="nav-days cj-buttonset"></span>' : ''));
 				$m = $obj.find('.nav-months');
 				$y = $obj.find('.nav-years');
+				$d = $obj.find('.nav-days');
+
+				// do we need to show the days? if so, create day buttons and bind click events
+				if (opts.showDays) {
+					// create the month buttons
+					for (i = 1; i <= d.daysInMonth(); i++) {
+						$d.append('<button class="cj-button cj-button-day ui-state-default ui-corner-all" data-day="' + i + '">' + i + '</button>');
+					}
+					$obj.find('.nav-days button').on('click', function () {
+						var $this = $(this),
+							cdate = new Date($obj.data('cdate'));
+						setDateNav($this.attr('data-day'), cdate.getMonth() + 1, cdate.getFullYear(), function(cdate) {
+							if ($.isFunction(opts.onClick)) {
+								opts.onClick.call($obj.get(0), cdate);
+							}
+						});
+					});
+				}
 
 				// create the month buttons
 				for (i = 1; i <= 12; i++) {
@@ -218,17 +270,32 @@
 				);
 
 				// bind our month and year buttons with a click handler
-				$obj.find('.nav-months button').bind('click', function () {
-					setDateNav($(this).attr('data-month'));
+				$obj.find('.nav-months button').on('click', function () {
+					var $this = $(this);
+					setDateNav(1, $this.attr('data-month'), null, function(cdate) {
+						if ($.isFunction(opts.onClick)) {
+							opts.onClick.call($obj.get(0), cdate);
+						}
+					});
 				});
-				$obj.find('.nav-years button').bind('click', function () {
-					var cdate = new Date($obj.data('cdate'));
-					setDateNav(cdate.getMonth() + 1, $(this).attr('data-inc'));
+				$obj.find('.nav-years button').on('click', function () {
+					var $this = $(this),
+						cdate = new Date($obj.data('cdate'));
+					setDateNav(1, cdate.getMonth() + 1, $this.attr('data-inc'), function(cdate) {
+						if ($.isFunction(opts.onClick)) {
+							opts.onClick.call($obj.get(0), cdate);
+						}
+					});
 				});
 
 				// set the initial buttons states
 				$obj.fadeIn('fast');
-				setDateNav();
+				setDateNav(null, null, null, function() {
+					//if the user provided a onLoad, then call it
+					if ($.isFunction(opts.onLoad)) {
+						opts.onLoad.call($obj.get(0), $obj.data('cdate'));
+					}
+				});
 			}
 		}
 

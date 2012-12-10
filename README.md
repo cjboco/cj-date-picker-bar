@@ -1,7 +1,7 @@
-CJ Date Picker Bar v1.0
+CJ Date Picker Bar
 =======================
 
-Copyright (c) 2011 Creative Juices Bo. Co.
+Copyright (c) 2012 Creative Juices Bo. Co.
 Author: Doug Jones [www.cjboco.com](http://www.cjboco.com/)
 Licensed under the MIT.
 
@@ -44,6 +44,7 @@ These are the items which you can pass to the function when initializing.
 | bigInc     | number   | 10                                                                                   |
 | tinyInc    | number   | 5                                                                                    |
 | monthNames | array    | ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] |
+| showDays   | boolean  | false                                                                                |
 | showInc    | boolean  | false                                                                                |
 | showFuture | boolean  | true                                                                                 |
 | callback   | function | null                                                                                 |

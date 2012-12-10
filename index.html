@@ -11,6 +11,7 @@
 <title>CJBoCo - jQuery Date Navigation Bar</title>
 <link rel="shortcut icon" href="assets/images/favicon.png">
 <link href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css"/>
+<link href="//jqueryui.com/themes/base/jquery.ui.all.css" rel="stylesheet" type="text/css"/>
 <link href="assets/css/demo.css" rel="stylesheet" type="text/css" media="all">
 <link href="assets/css/cj-date-picker-bar.css" rel="stylesheet" type="text/css" media="all">
 </head>
@@ -114,9 +115,13 @@
    monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
                            // Optional month name overide. Provided for non-english localization.
                            // Defaults to english short names (i.e. what's listed here)
+   showDays: true,         // shows the day buttons. (defaults false)
    showInc: false,         // shows the increments numbers, instead of '<<' '<' or '>' '>>'. (defaults false)
    showFuture: true,       // allows the user to navigate to dates greater than the current date. (defaults true)
-   callback: function(dateObj) {
+   onLoad: function(dateObj) {
+      // ...do your callback stuff here.
+   },
+   onClick: function(dateObj) {
       // ...do your callback stuff here.
       // dateObj = a JavaScript date object.
    }
@@ -184,6 +189,12 @@
 				<td>[&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;]</td>
 			</tr>
 			<tr>
+				<td>showDays</td>
+				<td>If set to TRUE, then the day buttons will be displayed.</td>
+				<td>boolean</td>
+				<td>false</td>
+			</tr>
+			<tr>
 				<td>showInc</td>
 				<td>If set to TRUE, then the year increment buttons will show the actual jump value. If FALSE, then uses &lt;&lt;, &lt;, &gt;, &gt;&gt;</td>
 				<td>boolean</td>
@@ -196,7 +207,13 @@
 				<td>true</td>
 			</tr>
 			<tr>
-				<td>callback</td>
+				<td>onLoad</td>
+				<td>An optional callback function that gets called after the plug in loads and initializes.</td>
+				<td>function</td>
+				<td>null</td>
+			</tr>
+			<tr>
+				<td>onClick</td>
 				<td>An optional callback function that gets called after a button is clicked.</td>
 				<td>function</td>
 				<td>null</td>
@@ -210,9 +227,9 @@
 	</footer>
 </div>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js"></script>
-<script src="//jqueryui.com/themeroller/themeswitchertool/"></script>
+<script src="//jqueryui.com/js/jquery.js"></script>
 
 <script src="assets/js/jquery.cj-date-picker-bar.js"></script>
 <script>
@@ -220,14 +237,18 @@
    "use strict";
 
    // internally used to switch UI themes
-   $('#switcher').themeswitcher();
+   // ui switcher gone?!?
+   if ($.themeswitcher) {
+	   $('#switcher').themeswitcher();
+   }
 
    // the magical stuff...
    $('.cj-datenav').cjDatePickerBar({
       date: '10/31/2011',
       dateMin: '5/2/2010',
       dateMax: '10/31/2011',
-      callback: function(dateObj) {
+      showDays: true,
+      onClick: function(dateObj) {
 
          //
          // The following is just a quick example of what is possible.
