@@ -47,6 +47,7 @@ These are the items which you can pass to the function when initializing.
 | showDays   | boolean  | false                                                                                |
 | showInc    | boolean  | false                                                                                |
 | showFuture | boolean  | true                                                                                 |
-| callback   | function | null                                                                                 |
+| onLoad     | function | null                                                                                 |
+| onClick    | function | null                                                                                 |
 
 Please review included index.html for further details and help.
