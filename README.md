@@ -17,7 +17,7 @@ A jQuery plugin to display a horizontal date picker bar to allow quick and easy 
 	   "use strict";
 	   $('.cj-datenav').cjDatePickerBar({
 		  date: '10/31/2011',
-		  callback: function(dateObj) {
+		  onClick: function(dateObj) {
 			 console.log(dateObj)
 		  }
 	   });
@@ -28,6 +28,7 @@ A jQuery plugin to display a horizontal date picker bar to allow quick and easy 
 The ID and CLASS naming conventions allow for jQuery UI theme styling, but additional items are available to style.
 
 	.cj-datenav              - The main block.
+	.cj-datenav .nav-days    - The day button set
 	.cj-datenav .nav-months  - The month button set
 	.cj-datenav .nav-years   - The year button set
 	.cj-datenav .cj-button   - The buttons
