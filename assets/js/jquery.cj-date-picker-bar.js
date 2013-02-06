@@ -9,6 +9,7 @@
  * A jQuery plugin to display a horizontal date picker bar to allow quick and easy date selection.
  * Returns a JS date object.
  *
+ *   2.3 - Fixed number of days in month.
  *   2.2 - Added days option.
  *   2.1 - Added redefined onLoad/onClick methods.
  *   2.0 - Renamed function to reflect project name.
@@ -53,6 +54,15 @@
 		Date.prototype.daysInMonth = function() {
 			return daysInMonth(this.getFullYear(), this.getMonth());
 		};
+
+		function toggleDays(d) {
+			var i, days = d.daysInMonth(),
+				$d = $obj.find('.nav-days');
+			$d.find('.cj-button-day').hide();
+			for (i = 1; i <= days; i++) {
+				$d.find('.cj-button-day[data-day="' + i + '"]').show();
+			}
+		}
 
 		function setDateNav(d, m, y, clb) {
 
@@ -238,9 +248,10 @@
 				// do we need to show the days? if so, create day buttons and bind click events
 				if (opts.showDays) {
 					// create the month buttons
-					for (i = 1; i <= d.daysInMonth(); i++) {
+					for (i = 1; i <= 31; i++) {
 						$d.append('<button class="cj-button cj-button-day ui-state-default ui-corner-all" data-day="' + i + '">' + i + '</button>');
 					}
+					toggleDays(d);
 					$obj.find('.nav-days button').on('click', function () {
 						var $this = $(this),
 							cdate = new Date($obj.data('cdate'));
@@ -273,6 +284,7 @@
 				$obj.find('.nav-months button').on('click', function () {
 					var $this = $(this);
 					setDateNav(1, $this.attr('data-month'), null, function(cdate) {
+						toggleDays(cdate);
 						if ($.isFunction(opts.onClick)) {
 							opts.onClick.call($obj.get(0), cdate);
 						}
@@ -282,6 +294,7 @@
 					var $this = $(this),
 						cdate = new Date($obj.data('cdate'));
 					setDateNav(1, cdate.getMonth() + 1, $this.attr('data-inc'), function(cdate) {
+						toggleDays(cdate);
 						if ($.isFunction(opts.onClick)) {
 							opts.onClick.call($obj.get(0), cdate);
 						}
