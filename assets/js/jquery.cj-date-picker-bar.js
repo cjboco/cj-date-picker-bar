@@ -9,15 +9,17 @@
  * A jQuery plugin to display a horizontal date picker bar to allow quick and easy date selection.
  * Returns a JS date object.
  *
- *   2.3 - Fixed number of days in month.
- *   2.2 - Added days option.
- *   2.1 - Added redefined onLoad/onClick methods.
- *   2.0 - Renamed function to reflect project name.
+ *   2.3.1 - Fixed a small problem where the months weren't
+ *	       displaying properly when showDays was false.
+ *   2.3   - Fixed number of days in month.
+ *   2.2   - Added days option.
+ *   2.1   - Added redefined onLoad/onClick methods.
+ *   2.0   - Renamed function to reflect project name.
  *         Added min and max date settings. (Overides showFuture)
  *         Updated internal isDate() function.
  *         File & document cleanup.
- *   1.1 - Added ability to prevent future dates.
- *   1.0 - initial release
+ *   1.1   - Added ability to prevent future dates.
+ *   1.0   - initial release
  *
  * @Maybe add the ability to set return date format (i.e. mm/dd/yyyy, etc)
  */
@@ -209,10 +211,16 @@
 				opts.dateMin = opts.dateMin ? new Date(opts.dateMin) : null;
 				if (!isDate(opts.dateMin)) {
 					opts.dateMin = null;
+				} else if (!opts.showDays) {
+					// we need to set the min date DAY to 1 if not showing days.
+					opts.dateMin = new Date(opts.dateMin.setDate(1));
 				}
 				opts.dateMax = opts.dateMax ? new Date(opts.dateMax) : null;
 				if (!isDate(opts.dateMax)) {
 					opts.dateMax = null;
+				} else if (!opts.showDays) {
+					// we need to set the max date DAY to 1 if not showing days.
+					opts.dateMax = new Date(opts.dateMax.setDate(1));
 				}
 				if (isDate(opts.dateMin) && isDate(opts.dateMax) && opts.dateMax < opts.dateMin) {
 					throw('Invalid min or max date.');
