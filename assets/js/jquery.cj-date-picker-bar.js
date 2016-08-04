@@ -9,8 +9,10 @@
  * A jQuery plugin to display a horizontal date picker bar to allow quick and easy date selection.
  * Returns a JS date object.
  *
+ *   2.3.2 - Fixed issue with day display not workng correctly
+ *	   if showWeeks setting was FALSE
  *   2.3.1 - Fixed a small problem where the months weren't
- *	       displaying properly when showDays was false.
+ *         displaying properly when showDays was false.
  *   2.3   - Fixed number of days in month.
  *   2.2   - Added days option.
  *   2.1   - Added redefined onLoad/onClick methods.
@@ -38,6 +40,7 @@
 				showInc: false,
 				showFuture: true,
 				showDays: false,
+				showWeeks: false,
 				callback: null,
 				onLoad: null,
 				onClick: null
@@ -51,10 +54,20 @@
 					e = new Date(year, month + 1, 1),
 					days = parseInt((e - s) / (1000 * 60 * 60 * 24), 10);
 				return days;
+			},
+			weeksInMonth = function(year, month) {
+				var firstOfMonth = new Date(year, month - 1, 1),
+					lastOfMonth = new Date(year, month, 0),
+					used = firstOfMonth.getDay() + lastOfMonth.getDate();
+				return Math.ceil(used / 7);
 			};
 
 		Date.prototype.daysInMonth = function() {
 			return daysInMonth(this.getFullYear(), this.getMonth());
+		};
+
+		Date.prototype.weeksInMonth = function() {
+			return weeksInMonth(this.getFullYear(), this.getMonth());
 		};
 
 		function toggleDays(d) {
@@ -127,7 +140,6 @@
 					cdate.setDate(d);
 
 					// update the buttons
-
 					$obj.find('.nav-days button[data-day="' + d + '"]').addClass('ui-state-focus');
 					$obj.find('.nav-months button[data-month="' + m + '"]').addClass('ui-state-focus');
 					$obj.find('.nav-years button[data-inc="prevbig"]').attr('data-year', cdate.getFullYear() - opts.bigInc);
@@ -141,7 +153,7 @@
 					// only activate buttons that fall withing our date range (if provided)
 					if (isDate(opts.dateMin) || isDate(opts.dateMax)) {
 
-						// check the current date and make sure it's withing our range
+						// check the current date and make sure it's within our range
 						cdate = cdate < opts.dateMin ? opts.dateMin : cdate;
 						cdate = cdate > opts.dateMax ? opts.dateMax : cdate;
 
@@ -200,10 +212,16 @@
 
 		function initDateNav() {
 
-			var d, i, $d, $m, $y;
+			var d, i, $d, $w, $m, $y;
 
 			// check to see if our object exists
 			if ($obj.length > 0) {
+
+				// fix booleans
+				opts.showDays = !!opts.showDays;
+				opts.showFuture = !!opts.showFuture;
+				opts.showInc = !!opts.showInc;
+				opts.showWeeks = !!opts.showWeeks;
 
 				// check to see if the user supplied a min or
 				// max date. Double check if they are valid dates
@@ -211,17 +229,19 @@
 				opts.dateMin = opts.dateMin ? new Date(opts.dateMin) : null;
 				if (!isDate(opts.dateMin)) {
 					opts.dateMin = null;
-				} else if (!opts.showDays) {
-					// we need to set the min date DAY to 1 if not showing days.
+				} else if (!(opts.showDays || opts.showWeeks)) {
+					// we need to set the min date DAY to 1 if not showing days or weeks.
 					opts.dateMin = new Date(opts.dateMin.setDate(1));
 				}
+
 				opts.dateMax = opts.dateMax ? new Date(opts.dateMax) : null;
 				if (!isDate(opts.dateMax)) {
 					opts.dateMax = null;
-				} else if (!opts.showDays) {
-					// we need to set the max date DAY to 1 if not showing days.
+				} else if (!(opts.showDays || opts.showWeeks)) {
+					// we need to set the max date DAY to 1 if not showing days or weeks.
 					opts.dateMax = new Date(opts.dateMax.setDate(1));
 				}
+
 				if (isDate(opts.dateMin) && isDate(opts.dateMax) && opts.dateMax < opts.dateMin) {
 					throw('Invalid min or max date.');
 				}
@@ -248,14 +268,15 @@
 				$obj.data('cdate', d);
 
 				// create the navigation bar DOM
-				$obj.html('').hide().append('<span class="nav-months cj-buttonset"></span><span class="nav-years cj-buttonset"></span>' + (opts.showDays ? '<span class="nav-days cj-buttonset"></span>' : ''));
+				$obj.html('').hide().append('<span class="nav-months cj-buttonset"></span><span class="nav-years cj-buttonset"></span>' + (opts.showWeeks ? '<span class="nav-weeks cj-buttonset"></span>' : '') + (opts.showDays ? '<span class="nav-days cj-buttonset"></span>' : ''));
 				$m = $obj.find('.nav-months');
 				$y = $obj.find('.nav-years');
+				$w = $obj.find('.nav-weeks');
 				$d = $obj.find('.nav-days');
 
 				// do we need to show the days? if so, create day buttons and bind click events
 				if (opts.showDays) {
-					// create the month buttons
+					// create the day buttons
 					for (i = 1; i <= 31; i++) {
 						$d.append('<button class="cj-button cj-button-day ui-state-default ui-corner-all" data-day="' + i + '">' + i + '</button>');
 					}
@@ -269,6 +290,26 @@
 							}
 						});
 					});
+				}
+
+				// do we need to show the weeks? if so, create week buttons and bind click events
+				if (opts.showWeeks) {
+					// create the week buttons
+					for (i = 1; i <= d.weeksInMonth(); i++) {
+						$w.append('<button class="cj-button cj-button-week ui-state-default ui-corner-all" data-week="' + i + '">Week ' + i + '</button>');
+					}
+					/*
+					toggleWeeks(d);
+					$obj.find('.nav-week button').on('click', function () {
+						var $this = $(this),
+							cdate = new Date($obj.data('cdate'));
+						setDateNav($this.attr('data-day'), cdate.getMonth() + 1, cdate.getFullYear(), function(cdate) {
+							if ($.isFunction(opts.onClick)) {
+								opts.onClick.call($obj.get(0), cdate);
+							}
+						});
+					});
+					*/
 				}
 
 				// create the month buttons
